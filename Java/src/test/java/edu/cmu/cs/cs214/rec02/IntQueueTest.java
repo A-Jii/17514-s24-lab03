@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 import static org.junit.Assert.*;
@@ -38,8 +39,8 @@ public class IntQueueTest {
     @Before
     public void setUp() {
         // comment/uncomment these lines to test each class
-        mQueue = new LinkedIntQueue();
-    //    mQueue = new ArrayIntQueue();
+        // mQueue = new LinkedIntQueue();
+        mQueue = new ArrayIntQueue();
 
         testList = new ArrayList<>(List.of(1, 2, 3));
     }
@@ -53,19 +54,24 @@ public class IntQueueTest {
     @Test
     public void testNotEmpty() {
         // TODO: write your own unit test
-        fail("Test not implemented");
+        mQueue.enqueue(1);
+        assertFalse(mQueue.isEmpty());
+        // fail("Test not implemented");
     }
 
     @Test
     public void testPeekEmptyQueue() {
         // TODO: write your own unit test
-        fail("Test not implemented");
+        assertNull(mQueue.peek());
+        // fail("Test not implemented");
     }
 
     @Test
     public void testPeekNoEmptyQueue() {
         // TODO: write your own unit test
-        fail("Test not implemented");
+        mQueue.enqueue(1);
+        assertEquals(Integer.valueOf(1), mQueue.peek());
+        // fail("Test not implemented");
     }
 
     @Test
@@ -81,7 +87,17 @@ public class IntQueueTest {
     @Test
     public void testDequeue() {
         // TODO: write your own unit test
-        fail("Test not implemented");
+        for (int i = 0; i < testList.size(); i++) {
+            mQueue.enqueue(testList.get(i));
+        }
+
+        for (int i = 0; i < testList.size(); i++) {
+            assertEquals(testList.get(i), mQueue.dequeue());
+            assertEquals(testList.size() - i - 1, mQueue.size());
+        }
+
+        assertTrue(mQueue.isEmpty());
+        // fail("Test not implemented");
     }
 
     @Test
@@ -103,6 +119,94 @@ public class IntQueueTest {
                 assertEquals(mQueue.dequeue(), result);
             }
         }
+    }
+
+    @Test
+    public void testEnqueueBeyondInitialCapacity() {
+        // Assume the initial capacity of the queue is 10
+        int initialCapacity = 10;
+    
+        // Enqueue more elements than the initial capacity
+        for (int i = 0; i < initialCapacity + 5; i++) {
+            mQueue.enqueue(i);
+        }
+        
+        int status = 0;
+
+        // Check that all elements were added successfully
+        for (int i = 0; i < initialCapacity + 5; i++) {
+            if (i != mQueue.dequeue()) {
+                status = 1;
+            }
+        }
+
+        assertEquals(0, status);
+    }
+
+    @Test
+    public void testDequeueEmptyQueue() {
+        // Dequeue from an empty queue
+        if (mQueue.isEmpty()) {
+            assertNull(mQueue.dequeue());
+        }
+    }
+
+    @Test
+    public void testSizeDontChange() {
+        // Enqueue and dequeue elements from the queue
+        for (int i = 0; i < 10; i++) {
+            mQueue.enqueue(i);
+        }
+        for (int i = 0; i < 10; i++) {
+            mQueue.dequeue();
+        }
+
+        // Check that the size of the queue is 0
+        assertEquals(0, mQueue.size());
+    }
+
+    @Test
+    public void peekEmptyQueue() {
+        // Peek from an empty queue
+        if (mQueue.isEmpty()) {
+            assertNull(mQueue.peek());
+        }
+    }
+
+    @Test
+    public void testEnsureCapacity() {
+        for (int i = 0; i < 5; i++) {
+            mQueue.enqueue(i);
+        }
+        mQueue.dequeue();
+        for (int i = 5; i < 13; i++) {
+            mQueue.enqueue(i);
+        }
+
+        int status = 0;
+        for (int i = 1; i <= 12; i++) {
+            if (i != mQueue.dequeue()) {
+                status = 1;
+            }
+        }
+
+        assertEquals(0, status);
+    }
+
+    @Test
+    public void testClear() {
+        // Enqueue some elements
+        mQueue.enqueue(1);
+        mQueue.enqueue(2);
+        mQueue.enqueue(3);
+
+        // Clear the queue
+        mQueue.clear();
+
+        // Check that the queue is empty
+        assertTrue(mQueue.isEmpty());
+        assertEquals(0, mQueue.size());
+        assertNull(mQueue.peek());
     }
 
 
